@@ -166,7 +166,22 @@ impl FuzzProject {
             .to_owned();
 
         if build.coverage {
-            rustflags.push_str(" -Zinstrument-coverage");
+            match &build.crates_with_coverage {
+                Some(crate_names) => {
+                    // TODO (amaurremi): What if user wants to specify their own RUSTC_WRAPPER?
+                    let mut rustc_wrapper = "scripts/wrapper.py ".to_owned();
+                    rustc_wrapper.push_str(&crate_names.len().to_string());
+                    rustc_wrapper.push_str(" ");
+                    for crate_name in crate_names {
+                        rustc_wrapper.push_str(crate_name);
+                        rustc_wrapper.push_str(" ");
+                    }
+                    cmd.env("RUSTC_WRAPPER", rustc_wrapper);
+                }
+                None => {
+                    rustflags.push_str(" -Zinstrument-coverage");
+                }
+            }
         }
 
         match build.sanitizer {

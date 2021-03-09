@@ -120,6 +120,13 @@ pub struct BuildOptions {
     /// Instrument program code with source-based code coverage information.
     /// This build option will be automatically used when running `cargo fuzz coverage`.
     pub coverage: bool,
+
+    /// Only for `cargo fuzz coverage` command: Specify the names of crates that should be instrumented
+    /// for coverage reporting. This can be helpful if coverage instrumentation results
+    /// in linker errors. If not specified, all crates will be instrumented.
+    /// Caution: This will override the RUSTC_WRAPPER environment variable.
+    #[structopt(long = "crates-with-coverage")]
+    pub crates_with_coverage: Option<Vec<String>>,
 }
 
 impl stdfmt::Display for BuildOptions {
